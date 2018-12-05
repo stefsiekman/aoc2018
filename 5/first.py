@@ -1,28 +1,21 @@
 def solve(line):
-    startFrom = 0
-    prints = 0
-    while True:
+    index = 0
+    while index < len(line):
         found = False
-        last = None
 
-        for i in range(startFrom, len(line)):
-            c = line[i]
-            if (c.lower() == last and c.isupper()) or (c.upper() == last and c.islower()):
-                newLine = line[:i-1] + line[i+1:]
-                line = newLine
-                startFrom = i - 10
-                if startFrom < 0:
-                    startFrom = 0
-                found = True
-                break
+        c = line[index]
+        last = line[index-1] if index > 0 else None
 
-            last = c
+        if (c.lower() == last and c.isupper()) or (c.upper() == last and c.islower()):
+            newLine = line[:index-1] + line[index+1:]
+            line = newLine
+            index -= 2
 
         if len(line) % 1000 == 0:
             print(f"\r{len(line)}", end="")
 
-        if not found:
-            break
+        index += 1
+
     print(f"\r{len(line)}")
 
 
