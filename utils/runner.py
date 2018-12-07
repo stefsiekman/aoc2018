@@ -4,7 +4,9 @@ import sys
 expectedResult = None
 
 def start():
+    """Return either de puzzle input or sample depending on the arguments."""
     global expectedResult
+
     # In case we're running an example
     if len(sys.argv) >= 2 and sys.argv[1].startswith("s"):
         with open("sample.txt", "r") as file:
@@ -37,6 +39,8 @@ def printLines(lines, padding=5):
     # Print each line
     for i, (s, o, t) in enumerate(zip(strings, offsets, trails)):
         print(f"┃{' '*padding}{' '*o}{s}{' '*t}{' '*padding}┃")
+
+        # Only print the separator on the not-last lines
         if i != len(strings) - 1:
             print(f"┠{'─'*padding}{'─'*maxLength}{'─'*padding}┨")
 
