@@ -32,16 +32,16 @@ def printLines(lines, padding=5):
     trails = [maxLength - l - o for l,o in zip(lengths, offsets)]
 
     # Print the header
-    print(f"┏━━━━━{'━'*maxLength}━━━━━┓")
+    print(f"┏{'━'*padding}{'━'*maxLength}{'━'*padding}┓")
 
     # Print each line
     for i, (s, o, t) in enumerate(zip(strings, offsets, trails)):
-        print(f"┃     {' '*o}{s}{' '*t}     ┃")
+        print(f"┃{' '*padding}{' '*o}{s}{' '*t}{' '*padding}┃")
         if i != len(strings) - 1:
-            print(f"┠─────{'─'*maxLength}─────┨")
+            print(f"┠{'─'*padding}{'─'*maxLength}{'─'*padding}┨")
 
     # Print the footer
-    print(f"┗━━━━━{'━'*maxLength}━━━━━┛")
+    print(f"┗{'━'*padding}{'━'*maxLength}{'━'*padding}┛")
 
 
 def done(result):
