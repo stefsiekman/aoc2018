@@ -1,4 +1,3 @@
-import pyperclip
 import utils.runner as runner
 
 def solve(lines):
