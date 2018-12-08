@@ -1,44 +1,41 @@
 import utils.runner as runner
 
-def solveMiddle(nodes, numbers):
-    if len(numbers) < 2:
-        return (0, 0)
+class Node:
 
-    print(f"Solving middle {numbers}")
+    def __init__(self, depth=0):
+        self.depth = depth
 
-    index = 0
-    sum = 0
-    print(f"{nodes} to go over")
-    for n in range(nodes):
-        newNodes = numbers[index]
-        metas = numbers[index + 1]
+    def process(self, numbers):
+        self.childrenCount = numbers[0]
+        self.metasCount = numbers[1]
 
-        index += 2
+        # Go through all the children
+        offset = 2
+        childrenLength = 0
+        self.children = []
+        for n in range(self.childrenCount):
+            self.children.append(Node(self.depth+1))
+            length = self.children[n].process(numbers[offset:])
+            childrenLength += length
+            offset += length
 
-        print(f"Nodes {n} has {newNodes} nodes and {metas} metas")
 
-        if newNodes > 0:
-            res = solveMiddle(newNodes, numbers[(index):])
+        # Find the list of metas
+        metaBegin = 2 + childrenLength
+        metaEnd = metaBegin + self.metasCount
+        self.metas = numbers[metaBegin:metaEnd]
 
-            sum += res[1]
-            index += res[0]
+        # Return the length of this node in the numbers list
+        return metaEnd
 
-        for m in range(metas):
-            sum += numbers[index]
-            print(f"Adding meta {numbers[index]}")
-            index += 1
-
-    return (index, sum)
-
+    def count(self):
+        return sum([c.count() for c in self.children]) + sum(self.metas)
 
 def solve(numbers):
-    nodes = numbers[0]
-    metas = numbers[1]
+    root = Node()
+    root.process(numbers)
+    return root.count()
 
-    print("calling")
-    res = solveMiddle(nodes, numbers[2:])
-
-    return res[1] + sum(numbers[len(numbers)-metas:])
 
 if __name__ == "__main__":
     result = solve([int(n) for n in runner.start().split(" ")])
