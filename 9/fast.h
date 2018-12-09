@@ -9,6 +9,7 @@ typedef struct marbel Marbel;
 
 Marbel* create_marbel(unsigned long number, Marbel* left, Marbel* right);
 Marbel* create_marbel();
+Marbel* add_marbel(Marbel* self, unsigned long number);
 
 unsigned long solve(int players, unsigned long marbels); 
 
