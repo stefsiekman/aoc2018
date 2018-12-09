@@ -61,10 +61,27 @@ Marbel* remove_marbel_7_left(Marbel* self, unsigned long* number) {
     return toRight;
 }
 
+void delete_marbels(Marbel* marbel) {
+    // Break to clockwise circle
+    marbel->left->right = NULL;
+
+    // As long as there are marbels, keep iterating
+    while (marbel) {
+        // Save the pointer to the next marbel
+        Marbel* next = marbel->right;
+
+        // Clear the marbel
+        free(marbel);
+
+        // Go to the next
+        marbel = next;
+    }
+}
+
 unsigned long solve(int players, unsigned long marbels) {
     // Initialization of player scores
     int currentPlayer = 1;
-    int scores[players];
+    unsigned long scores[players];
     for (int i = 0; i < players; i++) {
         scores[i] = 0;
     }
@@ -105,11 +122,15 @@ unsigned long solve(int players, unsigned long marbels) {
         }
     }
 
+    // Clear the marbels from memory
+    printf("Puzzle done, clearing memory...\n");
+    delete_marbels(currentMarbel);
+
     return maxScore;
 }
 
 int main(int argc, char** argv) {
-    unsigned long result = solve(5, 25);
+    unsigned long result = solve(432, 7101900);
     printf("Result is: %lu\n", result);
     return 0;
 }

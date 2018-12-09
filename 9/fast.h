@@ -12,6 +12,8 @@ Marbel* create_root_marbel();
 Marbel* add_marbel(Marbel* self, unsigned long number);
 Marbel* remove_marbel_7_left(Marbel* self, unsigned long* number);
 
+void delete_marbels(Marbel* marbel);
+
 unsigned long solve(int players, unsigned long marbels); 
 
 #endif
