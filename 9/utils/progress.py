@@ -7,25 +7,39 @@ def setup(tasks, width=80):
     global tasksTotal, barWidth, totalWidth
     tasksTotal = tasks
     totalWidth = width
-    barWidth = totalWidth - 7 - 6
+    barWidth = totalWidth - 5 - 6
+
+def calcLabelPadding(label, space):
+    labelLength = len(str(label))
+    left = int((space - labelLength) / 2)
+    right = space - labelLength - left
+    return (left, right)
+
+def labeledSide(label, length, char):
+    labelLength = len(str(label))
+    if labelLength < length - 4:
+        line = ""
+        padding = calcLabelPadding(label, length)
+        line += char * (padding[0] - 1)
+        line += f" {str(label)} "
+        line += char * (padding[1] - 1)
+        return line
+    else:
+        return char * length
 
 def done(done):
     global tasksDone
     tasksDone = done
-
-    # Left border of the bar
-    line = '\r┣'
+    line = '\r'
 
     # Done section
     doneLength = round(tasksDone/tasksTotal * barWidth)
-    line += '█' * doneLength
+    line += labeledSide(tasksDone, doneLength, '█')
 
     # Todo section
     todoLength = barWidth - doneLength
-    line += '━' * todoLength
-
-    # Right border
-    line += "┫ "
+    line += labeledSide(tasksTotal, todoLength, '━')
+    line += '' * todoLength
 
     # Percentage
     percentageString = str(round(tasksDone/tasksTotal * 100))
