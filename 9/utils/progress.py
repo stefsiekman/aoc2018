@@ -1,11 +1,13 @@
 tasksTotal = 100
 tasksDone = None
+tasksStep = 1
 barWidth = 80
 totalWidth = 80
 
 def setup(tasks, width=80):
-    global tasksTotal, barWidth, totalWidth
+    global tasksTotal, tasksStep, barWidth, totalWidth
     tasksTotal = tasks
+    tasksStep = int(tasks / 1000)
     totalWidth = width
     barWidth = totalWidth - 5 - 6
 
@@ -29,6 +31,11 @@ def labeledSide(label, length, char):
 
 def done(done):
     global tasksDone
+
+    # Check if it's time for a print (at every 0.1%)
+    if done % tasksStep != 0:
+        return
+
     tasksDone = done
     line = '\r'
 

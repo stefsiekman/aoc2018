@@ -50,8 +50,7 @@ def solve(lines):
         if cPlayer > players:
             cPlayer = 1
 
-        if marbel % int(lastMarbel/1000) == 0:
-            progress.done(marbel)
+        progress.done(marbel)
 
     progress.complete()
 
