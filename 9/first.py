@@ -1,4 +1,5 @@
 import utils.runner as runner
+import utils.progress as progress
 
 class Marbel:
 
@@ -33,6 +34,8 @@ def solve(lines):
 
     cMarbel = Marbel(0)
 
+    progress.setup(lastMarbel)
+
     for marbel in range(1,lastMarbel+1):
         if marbel % 23 == 0:
             scores[cPlayer-1] += marbel
@@ -47,11 +50,11 @@ def solve(lines):
         if cPlayer > players:
             cPlayer = 1
 
-        if marbel % 10000 == 0:
-            percentage = round(marbel/lastMarbel*100)
-            print(f"\rAt {marbel} of {lastMarbel} = {percentage}%", end="")
+        if marbel % int(lastMarbel/1000) == 0:
+            progress.done(marbel)
 
-    print("")
+    progress.complete()
+
     return max(scores)
 
 
