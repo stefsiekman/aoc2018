@@ -44,7 +44,7 @@ def done(done):
     # Percentage
     percentageString = str(round(tasksDone/tasksTotal * 100))
     percentagePadding = 3 - len(percentageString)
-    line += ' ' * percentagePadding
+    line += ' ' + ' ' * percentagePadding
     line += percentageString
     line += '%'
 
