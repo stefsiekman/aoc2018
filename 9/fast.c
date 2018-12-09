@@ -62,7 +62,50 @@ Marbel* remove_marbel_7_left(Marbel* self, unsigned long* number) {
 }
 
 unsigned long solve(int players, unsigned long marbels) {
-    return 0;
+    // Initialization of player scores
+    int currentPlayer = 1;
+    int scores[players];
+    for (int i = 0; i < players; i++) {
+        scores[i] = 0;
+    }
+
+    // The current marbel
+    Marbel* currentMarbel = create_root_marbel();
+
+    // Iterate over all the marbels that should be added
+    for (unsigned long marbel = 1; marbel <= marbels; marbel++) {
+        // Are we at the special 23-case?
+        if (marbel % 23 == 0) {
+            // Add the current marbel as score
+            scores[currentPlayer - 1] += marbel;
+
+            // Remove the marbel 7 to the left
+            unsigned long number = 0;
+            currentMarbel = remove_marbel_7_left(currentMarbel, &number);
+
+            // Add the number of the removed marbel to the score as well
+            scores[currentPlayer - 1] += number;
+        } else {
+            // Default is just to add the marbel
+            currentMarbel = add_marbel(currentMarbel, marbel);
+        }
+
+        // Go to the next player
+        currentPlayer++;
+        if (currentPlayer > players) {
+            currentPlayer = 1;
+        }
+    }
+
+    // Find the highest score
+    unsigned long maxScore = scores[0];
+    for (int i = 1; i < players; i++) {
+        if (scores[i] > maxScore) {
+            maxScore = scores[i];
+        }
+    }
+
+    return maxScore;
 }
 
 int main(int argc, char** argv) {

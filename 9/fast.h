@@ -8,8 +8,9 @@
 typedef struct marbel Marbel;
 
 Marbel* create_marbel(unsigned long number, Marbel* left, Marbel* right);
-Marbel* create_marbel();
+Marbel* create_root_marbel();
 Marbel* add_marbel(Marbel* self, unsigned long number);
+Marbel* remove_marbel_7_left(Marbel* self, unsigned long* number);
 
 unsigned long solve(int players, unsigned long marbels); 
 
