@@ -6,6 +6,10 @@ struct marbel {
     Marbel* right;
 };
 
+Marbel* create_root_marbel() {
+    return create_marbel(0, NULL, NULL);
+}
+
 Marbel* create_marbel(unsigned long number, Marbel* left, Marbel* right) {
     // All properties are immediately set, no need to clear
     Marbel* marbel = malloc(sizeof(Marbel));
