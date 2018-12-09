@@ -19,7 +19,7 @@ Marbel* create_marbel(unsigned long number, Marbel* left, Marbel* right) {
     marbel->right = right;
 
     // Set left and right to self if they're NULL
-    if (!left) { marbel->left = marbel; }
+    if (!left)  { marbel->left = marbel; }
     if (!right) { marbel->right = marbel; }
 
     return marbel;
@@ -38,6 +38,27 @@ Marbel* add_marbel(Marbel* self, unsigned long number) {
     toRight->left = newMarbel;
 
     return newMarbel;
+}
+
+Marbel* remove_marbel_7_left(Marbel* self, unsigned long* number) {
+    // Find the marbel 7 to the left
+    Marbel* toRemove = self->left->left->left->left->left->left->left;
+
+    // Get the neighbours of the marbel to remove
+    Marbel* toLeft  = toRemove->left;
+    Marbel* toRight = toRemove->right;
+
+    // Link the neighbours together
+    toLeft->right = toRight;
+    toRight->left = toLeft;
+
+    // Set the number to that of the removed marbel
+    *number = toRemove->number;
+
+    // Deallocate the removed marbel
+    free(toRemove);
+
+    return toRight;
 }
 
 unsigned long solve(int players, unsigned long marbels) {
