@@ -1,5 +1,7 @@
 #include "fast.h"
 
+unsigned long marbels_in_memory = 0;
+
 struct marbel {
     unsigned long number;
     Marbel* left;
@@ -13,6 +15,7 @@ Marbel* create_root_marbel() {
 Marbel* create_marbel(unsigned long number, Marbel* left, Marbel* right) {
     // All properties are immediately set, no need to clear
     Marbel* marbel = malloc(sizeof(Marbel));
+    marbels_in_memory++;
 
     marbel->number = number;
     marbel->left = left;
@@ -57,6 +60,7 @@ Marbel* remove_marbel_7_left(Marbel* self, unsigned long* number) {
 
     // Deallocate the removed marbel
     free(toRemove);
+    marbels_in_memory--;
 
     return toRight;
 }
@@ -72,6 +76,7 @@ void delete_marbels(Marbel* marbel) {
 
         // Clear the marbel
         free(marbel);
+        marbels_in_memory--;
 
         // Go to the next
         marbel = next;
@@ -123,7 +128,8 @@ unsigned long solve(int players, unsigned long marbels) {
     }
 
     // Clear the marbels from memory
-    printf("Puzzle done, clearing memory...\n");
+    unsigned long Mbytes = sizeof(Marbel) * marbels_in_memory / 1000000;
+    printf("Puzzle done, clearing %luMB of memory...\n", Mbytes);
     delete_marbels(currentMarbel);
 
     return maxScore;
