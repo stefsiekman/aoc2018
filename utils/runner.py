@@ -16,7 +16,9 @@ def start():
 
     # In case we're running the actual input
     else:
-        with open("input.txt", "r") as file:
+        # Try to read a file from argument
+        filename = sys.argv[1] if len(sys.argv) >= 2 else "input.txt"
+        with open(filename, "r") as file:
             return file.read()
 
 def printLines(lines, padding=5):
