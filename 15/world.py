@@ -29,16 +29,46 @@ class World:
         self.goblins = len([e for e in self.entities if not e.elf])
         print(f"Found {self.elves} elves and {self.goblins} goblins.")
 
+        # Keep track of the rounds played
+        self.rounds = 0
+
     def round(self):
         # Give all the entities a turn in reading order
         self.sortEntities()
         for entity in self.entities:
             # Terminate the game if an entities says someone's won
+            assert entity in self.entities, "Entity has died"
             if not entity.turn():
+                print()
                 return False
 
+            # TODO: what if the game eneded with the last entity killing
+
+        # Round is done
+        self.rounds += 1
+        # print(f"\nPlayed {self.rounds} rounds")
+        # self.printBoard()
+        print(f"\rPlayed {self.rounds} rounds", end="")
+
         # Indicate that we need to play another round
-        return False
+        return True
+
+    def printBoard(self):
+        for y in range(self.height):
+            ents = []
+            for x in range(self.width):
+                entity = self.entityAt((x,y))
+                if entity:
+                    if entity.elf:
+                        print("E", end="")
+                    else:
+                        print("G", end="")
+                    ents.append(entity)
+                elif self.isWallPosition((x,y)):
+                    print("#", end="")
+                else:
+                    print(".", end="")
+            print("    " + ";  ".join([str(e) for e in ents]))
 
     def sortEntities(self):
         self.entities.sort()
@@ -51,7 +81,6 @@ class World:
         return pos[0] < 0 or pos[0] >= self.width \
             or pos[1] < 0 or pos[1] >= self.height \
             or self.tiles[pos[1]][pos[0]]
-
 
     def nonEntityPosition(self, positions):
         """Return all the positions in a list that are not taken by an entity"""
@@ -103,8 +132,6 @@ class World:
                 # Put a node with itself as root
                 todo.put((pos, pos))
 
-        prints = 0
-
         while not todo.empty():
             # Get the next item to process
             pos, moveTo = todo.get() # moveTo is the origin direction return
@@ -112,6 +139,10 @@ class World:
             # Is it a wall?
             if self.isWallPosition(pos):
                 # Nothing to do, dead end
+                continue
+
+            # Is there another entity
+            if self.entityAt(pos):
                 continue
 
             # Have we already been here?
@@ -131,10 +162,6 @@ class World:
             # Mark node as visited
             visited.add(pos)
 
-        # No route was found
-        return None
-        # TODO: this can be removed, yay Python!
-
     def removeEntity(self, entity):
         """Removes an entity from the world"""
         # Double check it has dies
@@ -148,3 +175,6 @@ class World:
             self.elves -= 1
         else:
             self.goblins -= 1
+
+    def outcome(self):
+        return self.rounds * sum([e.hp for e in self.entities])

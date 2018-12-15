@@ -11,30 +11,45 @@ class Entity:
         self.attack = 3
 
     def turn(self):
-        print(f"\nTurn of {self} -> ", end="")
+        # print(f"\nTurn of {self} -> ", end="")
         inRange = self.enemiesInRange()
 
         # Attack if possible
         if len(inRange) > 0:
-            print(f"attack ({len(inRange)} in range)")
+            # print(f"attack ({len(inRange)} in range)")
             # Return whether the game should end
-            return self.fight(inRange[0])
+            return self.fight(inRange)
 
         # Otherwise, the entity will move
-        print("move")
+        # print("move")
 
         # Get goals to move to
         destinations = self.world.enemyRanges(self)
 
         # Find what direction we will have to move to
         moveTo = self.world.locationTowards(self.pos, destinations)
-        print(moveTo)
 
-        # Else, yay!
+        if moveTo:
+            self.pos = moveTo
+            inRange = self.enemiesInRange()
+
+            # Attack if possible
+            if len(inRange) > 0:
+                # print(f"attack ({len(inRange)} in range)")
+                # Return whether the game should end
+                return self.fight(inRange)
+
+        # We can continue the game
         return True
 
-    def fight(self, other):
+    def fight(self, others):
         """ Fight an entity, returns whether the game should end"""
+        # Determine which entity is best to attack
+        other = others[0]
+        for o in others:
+            if o.hp < other.hp:
+                other = o
+
         # Make sure we're attacking a different type fo entity
         assert self.elf != other.elf, f"{self} tried to attack {other}"
 
@@ -47,12 +62,9 @@ class Entity:
         # Deal the damage
         self.hp -= amount
 
-        print(f"    {self} was attacked")
-
         # Check if the entity has died
         if self.hp <= 0:
-            print("    Died as a result")
-            world.removeEntity(self)
+            self.world.removeEntity(self)
             return True
 
         return False
@@ -86,5 +98,5 @@ class Entity:
         return self.positionIndex() < other.positionIndex()
 
     def __str__(self):
-        type = "Elf" if self.elf else "Goblin"
+        type = "E" if self.elf else "G"
         return f"{type}({self.pos}, hp={self.hp})"
