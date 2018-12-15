@@ -1,4 +1,6 @@
+from queue import Queue
 from entity import Entity
+import utils.tuple as tupleutil
 
 class World:
 
@@ -43,10 +45,17 @@ class World:
 
     def nonWallPositions(self, positions):
         """Return all the positions in a list that are not in a wall"""
-        return [pos for pos in positions
-            if  pos[0] >= 0 and pos[0] < self.width  # X in range of world
-            and pos[1] >= 0 and pos[1] < self.height # Y in range of world
-            and not self.tiles[pos[1]][pos[0]]]      # Tile is not a wall
+        return [pos for pos in positions if not self.isWallPosition(pos)]
+
+    def isWallPosition(self, pos):
+        return pos[0] < 0 or pos[0] >= self.width \
+            or pos[1] < 0 or pos[1] >= self.height \
+            or self.tiles[pos[1]][pos[0]]
+
+
+    def nonEntityPosition(self, positions):
+        """Return all the positions in a list that are not taken by an entity"""
+        return [pos for pos in positions if not self.entityAt(pos)]
 
     def entityAt(self, position):
         """Find the entity, if any, that is at a given position"""
@@ -59,6 +68,72 @@ class World:
         return [e for e in
             [self.entityAt(pos) for pos in positions] # Find entity at position
             if e] # Remove any Nones that were found
+
+    def enemyRanges(self, entity):
+        """List of all positions that are in range of an enemy of the entity"""
+        # Get all the enemies first
+        enemies = self.enemies(entity)
+
+        # List all the positions around them (in a set, duplicaties removed)
+        unfilteredRanges = set()
+        for e in enemies:
+            for pos in e.positionsInRange():
+                unfilteredRanges.add(pos)
+
+        # Remove the positions that are taken by another entity
+        return self.nonEntityPosition(unfilteredRanges)
+
+    def enemies(self, entity):
+        """List of all enemies of an entity"""
+        return [e for e in self.entities if e.elf != entity.elf]
+
+    def locationTowards(self, start, destinations):
+        """
+        Find a neighbouring location to start that moves to the closest
+        destination
+        """
+
+        # Helping datastructures
+        visited = set(start)
+        todo = Queue()
+
+        # Add the inital positions to explore
+        for pos in tupleutil.around(start):
+            if not self.isWallPosition(pos):
+                # Put a node with itself as root
+                todo.put((pos, pos))
+
+        prints = 0
+
+        while not todo.empty():
+            # Get the next item to process
+            pos, moveTo = todo.get() # moveTo is the origin direction return
+
+            # Is it a wall?
+            if self.isWallPosition(pos):
+                # Nothing to do, dead end
+                continue
+
+            # Have we already been here?
+            if pos in visited:
+                # Nothing to do, again
+                continue
+
+            # Are we at a destination?
+            if pos in destinations:
+                # Return the original direction to move
+                return moveTo
+
+            # Add new locations to visit
+            for newPos in tupleutil.around(pos):
+                todo.put((newPos, moveTo))
+
+            # Mark node as visited
+            visited.add(pos)
+
+        # No route was found
+        return None
+        # TODO: this can be removed, yay Python!
 
     def removeEntity(self, entity):
         """Removes an entity from the world"""

@@ -16,12 +16,19 @@ class Entity:
 
         # Attack if possible
         if len(inRange) > 0:
-            print("attack")
+            print(f"attack ({len(inRange)} in range)")
             # Return whether the game should end
             return self.fight(inRange[0])
 
         # Otherwise, the entity will move
         print("move")
+
+        # Get goals to move to
+        destinations = self.world.enemyRanges(self)
+
+        # Find what direction we will have to move to
+        moveTo = self.world.locationTowards(self.pos, destinations)
+        print(moveTo)
 
         # Else, yay!
         return True
@@ -52,15 +59,8 @@ class Entity:
 
     def positionsInRange(self):
         """Position tuples that are in attack range of this entity"""
-
-        # List all the direction 'vectors'
-        around = [(0,-1), (1,0), (0,1), (-1,0)]
-
-        # Add these to the position to get a list of neighbours
-        allAround = [tupleutil.add(self.pos, dir) for dir in around]
-
-        # Check that these positions are not inside a wall
-        return self.world.nonWallPositions(allAround)
+        # Check that all around positions are not inside a wall
+        return self.world.nonWallPositions(tupleutil.around(self.pos))
 
     def enemiesInRange(self):
         """List of all the entities of a different type in range, sorted"""
