@@ -24,12 +24,16 @@ class World:
 
         print(f"There are {len(self.carts)} carts on the tracks.")
 
-    def run(self):
+    def run(self, destroy=False):
         # print(self)
         print("Running...")
         runs = 1
         while True:
-            for cartPos in sorted(self.carts.keys()):
+            for cartPos in sorted(self.carts.keys())[:]:
+                # Has the cart been removed in the mean time?
+                if not cartPos in self.carts:
+                    continue
+
                 # Pop the cart
                 cart = self.carts[cartPos]
                 del self.carts[cartPos]
@@ -41,14 +45,29 @@ class World:
 
                 # Check for collisions
                 if nextPos in self.carts:
-                    print(f"Collision in run #{runs}")
-                    return nextPos
+                    # Should we continue after a collision?
+                    if not destroy:
+                        print(f"Collision in run #{runs}")
+                        return nextPos
+                    else:
+                        # Would there be carts left after the collision?
+                        print(f"Collision in run #{runs} ({len(self.carts)-1} left)")
+                        if len(self.carts) >= 2:
+                            del self.carts[(y,x)]
 
-                # Rotate due to the track
-                self.tiles[y][x].rotate(cart)
+                # If there were no collisions
+                else:
 
-                # Reinsert
-                self.carts[nextPos] = cart
+                    # Rotate due to the track
+                    self.tiles[y][x].rotate(cart)
+
+                    # Reinsert
+                    self.carts[nextPos] = cart
+
+            # Stop if there is one cart left
+            if len(self.carts) <= 1:
+                return list(self.carts.keys())[0]
+
             runs += 1
             # print(self)
         return None
