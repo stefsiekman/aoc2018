@@ -39,11 +39,14 @@ class Base:
 
         queue.put((self.root, regex))
 
+        misses = 0
+
         while not queue.empty():
             node, regex = queue.get()
 
             # Skip if the regex is empty, nothing to explore
             if not regex:
+                misses += 1
                 continue
 
             # Directional movements from a node
@@ -56,12 +59,16 @@ class Base:
                 sections, after = splitSections(regex)
 
                 for section in sections:
-                    queue.put((node, section + after))
+                    newRegex = section + after
+                    if newRegex:
+                        queue.put((node, newRegex))
 
             else:
-                queue.put((node, regex[1:]))
+                newRegex = regex[1:]
+                if newRegex:
+                    queue.put((node, regex[1:]))
 
-            print(f"\rScanned {len(self.nodes)} nodes, queue size is {queue.qsize()}", end="")
+            print(f"\rScanned {len(self.nodes)} nodes, misses is {misses}, queue size is {queue.qsize()}", end="")
 
         print(" Done!")
 
