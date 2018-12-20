@@ -24,6 +24,7 @@ class Node:
     def addNode(self, nodes, d):
         newPos = tupleutil.add(self.pos, directionOffsetMap[d])
         newNode = None
+        wasNew = False
 
         # Is there already a node at the new position?
         if newPos in nodes:
@@ -31,6 +32,7 @@ class Node:
         else:
             newNode = Node(newPos)
             newNode.addTo(nodes)
+            wasNew = True
 
         # Update the links between the nodes
         if d == "N":
@@ -46,7 +48,7 @@ class Node:
             self.west = newNode
             newNode.east = self
 
-        return newNode
+        return (newNode, wasNew)
 
     def existingNeighbours(self):
         return [n for n in [self.north, self.east, self.south, self.west] if n]

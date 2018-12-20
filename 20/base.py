@@ -40,6 +40,7 @@ class Base:
         queue.put((self.root, regex))
 
         lastPrint = 0
+        nrNodes = 0
 
         while not queue.empty():
             node, regex = queue.get()
@@ -50,8 +51,12 @@ class Base:
 
             # Directional movements from a node
             if regex[0] in ["N", "E", "S", "W"]:
-                newNode = node.addNode(self.nodes, regex[0])
-                queue.put((newNode, regex[1:]))
+                newNode, wasNew = node.addNode(self.nodes, regex[0])
+                if wasNew:
+                    nrNodes += 1
+                newRegex = regex[1:]
+                if newRegex:
+                    queue.put((newNode, regex[1:]))
 
             # Process junctions
             elif regex[0] == "(":
@@ -67,9 +72,8 @@ class Base:
                 if newRegex:
                     queue.put((node, regex[1:]))
 
-            nrNodes = len(self.nodes)
             if nrNodes != lastPrint:
-                print(f"\rScanned {len(self.nodes)} nodes", end="")
+                print(f"\rScanned {len(self.nodes)} nodes, {queue.qsize()} due", end="")
                 lastPrint = nrNodes
 
         print(" Done!")
