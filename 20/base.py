@@ -61,7 +61,7 @@ class Base:
             else:
                 queue.put((node, regex[1:]))
 
-            print(f"\rScanned {len(self.nodes)} nodes.", end="")
+            print(f"\rScanned {len(self.nodes)} nodes, queue size is {queue.qsize()}", end="")
 
         print(" Done!")
 
