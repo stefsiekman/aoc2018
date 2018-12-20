@@ -6,7 +6,10 @@ def solve(regex):
     base = Base()
     base.parse(regex)
 
+    print(base)
+
     print(f"At most there are {base.most_doors()} doors.")
+    print(f"There are {base.far_rooms()} 1,000 or more doors away.")
     return 1
 
 

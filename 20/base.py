@@ -1,121 +1,18 @@
 from node import Node
 from queue import Queue
 
-<<<<<<< HEAD
-indxMem = {}
-def continueIndices(regex, start):
-    indices = [start+1]
-
-    if regex[start+1] == ")":
-        return indices
-
-    if start in indxMem:
-        return indxMem[start]
-
-    index = start
-    depth = 0
-
-    while True:
-        index += 1
-        char = regex[index]
-        if char == "(":
-            depth += 1
-        elif char == ")":
-            depth -= 1
-        elif char == "|" and depth == 0:
-            indices.append(index+1)
-
-        if depth == -1:
-            break
-
-    indxMem[start] = indices
-    return indices
-
-conatMem = {}
-
-def continueAt(regex, start):
-    index = start
-
-    if regex[start] == ")":
-        return start + 1
-
-    if start in conatMem:
-        return conatMem[start]
-
-    caught = []
-
-    depth = 0
-    while True:
-        index += 1
-        char = regex[index]
-        if char == "(":
-            depth += 1
-        elif char == ")":
-            depth -= 1
-
-        if char == "|" and depth == 0:
-            caught.append(index)
-
-        if depth == -1:
-            break
-
-    result = index + 1
-
-    for c in caught:
-        conatMem[c] = result
-
-    conatMem[start] = result
-    return result
-
-
-class Base:
-=======
->>>>>>> f855424... Use much easier stack method
 
 class Base:
     nodes = {}
 
-<<<<<<< HEAD
-    def __init__(self, regex):
-        self.root = Node((0,0))
-        self.root.addTo(self.nodes)
-        queue = LifoQueue()
-
-        queue.put((self.root, 0))
-=======
     def __init__(self):
         self.root = Node()
         self.root.add_to(self.nodes)
->>>>>>> f855424... Use much easier stack method
 
     def parse(self, regex):
         stack = [self.root]
         last_node = self.root
 
-<<<<<<< HEAD
-        while not queue.empty():
-            node, index = queue.get()
-
-            if index >= len(regex):
-                continue
-
-            char = regex[index]
-
-            # Directional movements from a node
-            if char in ["N", "E", "S", "W"]:
-                newNode, wasNew = node.addNode(self.nodes, char)
-                if wasNew:
-                    nrNodes += 1
-                queue.put((newNode, index+1))
-
-            # Process junctions
-            elif char == "(":
-                for newIndex in continueIndices(regex, index):
-                    queue.put((node, newIndex))
-
-            elif char in [")", "|"]:
-                queue.put((node, continueAt(regex, index)))
-=======
         for char in regex:
             if char in ["N", "E", "S", "W"]:
                 new_node = last_node.add_node(char, self.nodes)
@@ -138,16 +35,11 @@ class Base:
 
         while not queue.empty():
             node, doors = queue.get()
->>>>>>> f855424... Use much easier stack method
 
             if node in visited:
                 continue
             else:
-<<<<<<< HEAD
-                queue.put((node, index+1))
-=======
                 visited.add(node)
->>>>>>> f855424... Use much easier stack method
 
             if doors > max_doors:
                 max_doors = doors
