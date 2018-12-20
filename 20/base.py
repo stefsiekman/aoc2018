@@ -68,6 +68,8 @@ def continueAt(regex, start):
     if start in conatMem:
         return conatMem[start]
 
+    caught = []
+
     depth = 0
     while True:
         index += 1
@@ -77,11 +79,19 @@ def continueAt(regex, start):
         elif char == ")":
             depth -= 1
 
+        if char == "|" and depth == 0:
+            caught.append(index)
+
         if depth == -1:
             break
 
-    conatMem[start] = index+1
-    return index + 1
+    result = index + 1
+
+    for c in caught:
+        conatMem[c] = result
+
+    conatMem[start] = result
+    return result
 
 
 class Base:
