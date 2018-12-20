@@ -28,11 +28,15 @@ def splitSections(regex):
 
     return (sections, regex[index+1:])
 
+indxMem = {}
 def continueIndices(regex, start):
     indices = [start+1]
 
     if regex[start+1] == ")":
         return indices
+
+    if start in indxMem:
+        return indxMem[start]
 
     index = start
     depth = 0
@@ -50,13 +54,19 @@ def continueIndices(regex, start):
         if depth == -1:
             break
 
+    indxMem[start] = indices
     return indices
+
+conatMem = {}
 
 def continueAt(regex, start):
     index = start
 
     if regex[start] == ")":
         return start + 1
+
+    if start in conatMem:
+        return conatMem[start]
 
     depth = 0
     while True:
@@ -69,6 +79,8 @@ def continueAt(regex, start):
 
         if depth == -1:
             break
+
+    conatMem[start] = index+1
     return index + 1
 
 
