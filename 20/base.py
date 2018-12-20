@@ -39,14 +39,13 @@ class Base:
 
         queue.put((self.root, regex))
 
-        misses = 0
+        lastPrint = 0
 
         while not queue.empty():
             node, regex = queue.get()
 
             # Skip if the regex is empty, nothing to explore
             if not regex:
-                misses += 1
                 continue
 
             # Directional movements from a node
@@ -68,7 +67,10 @@ class Base:
                 if newRegex:
                     queue.put((node, regex[1:]))
 
-            print(f"\rScanned {len(self.nodes)} nodes, misses is {misses}, queue size is {queue.qsize()}", end="")
+            nrNodes = len(self.nodes)
+            if nrNodes != lastPrint:
+                print(f"\rScanned {len(self.nodes)} nodes", end="")
+                lastPrint = nrNodes
 
         print(" Done!")
 
