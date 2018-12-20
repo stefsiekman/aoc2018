@@ -28,6 +28,50 @@ def splitSections(regex):
 
     return (sections, regex[index+1:])
 
+def continueIndices(regex, start):
+    indices = [start+1]
+
+    if regex[start+1] == ")":
+        return indices
+
+    index = start
+    depth = 0
+
+    while True:
+        index += 1
+        char = regex[index]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        elif char == "|" and depth == 0:
+            indices.append(index+1)
+
+        if depth == -1:
+            break
+
+    return indices
+
+def continueAt(regex, start):
+    index = start
+
+    if regex[start] == ")":
+        return start + 1
+
+    depth = 0
+    while True:
+        index += 1
+        char = regex[index]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+
+        if depth == -1:
+            break
+    return index + 1
+
+
 class Base:
 
     nodes = {}
@@ -37,40 +81,36 @@ class Base:
         self.root.addTo(self.nodes)
         queue = LifoQueue()
 
-        queue.put((self.root, regex))
+        queue.put((self.root, 0))
 
         lastPrint = 0
         nrNodes = 0
 
         while not queue.empty():
-            node, regex = queue.get()
+            node, index = queue.get()
 
-            # Skip if the regex is empty, nothing to explore
-            if not regex:
+            if index >= len(regex):
                 continue
 
+            char = regex[index]
+
             # Directional movements from a node
-            if regex[0] in ["N", "E", "S", "W"]:
-                newNode, wasNew = node.addNode(self.nodes, regex[0])
+            if char in ["N", "E", "S", "W"]:
+                newNode, wasNew = node.addNode(self.nodes, char)
                 if wasNew:
                     nrNodes += 1
-                newRegex = regex[1:]
-                if newRegex:
-                    queue.put((newNode, regex[1:]))
+                queue.put((newNode, index+1))
 
             # Process junctions
-            elif regex[0] == "(":
-                sections, after = splitSections(regex)
+            elif char == "(":
+                for newIndex in continueIndices(regex, index):
+                    queue.put((node, newIndex))
 
-                for section in sections:
-                    newRegex = section + after
-                    if newRegex:
-                        queue.put((node, newRegex))
+            elif char in [")", "|"]:
+                queue.put((node, continueAt(regex, index)))
 
             else:
-                newRegex = regex[1:]
-                if newRegex:
-                    queue.put((node, regex[1:]))
+                queue.put((node, index+1))
 
             if nrNodes != lastPrint:
                 print(f"\rScanned {len(self.nodes)} nodes, {queue.qsize()} due", end="")
