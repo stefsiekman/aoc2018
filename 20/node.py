@@ -1,54 +1,50 @@
-from queue import Queue
-import utils.tuple as tupleutil
+import utils
 
-directionOffsetMap = {
-    "N": (0,-1),
-    "E": (1,0),
-    "S": (0,1),
-    "W": (-1,0)
+
+directionToOffset = {
+    "N": (0, -1),
+    "E": (1, 0),
+    "S": (0, 1),
+    "W": (-1, 0)
 }
 
+
 class Node:
-
     north = None
-    east  = None
+    east = None
     south = None
-    west  = None
+    west = None
 
-    def __init__(self, pos):
+    def __init__(self, pos=(0, 0)):
         self.pos = pos
 
-    def addTo(self, nodes):
-        nodes[self.pos] = self
+    def add_node(self, char, nodes):
+        new_pos = utils.tuple_add(self.pos, directionToOffset[char])
 
-    def addNode(self, nodes, d):
-        newPos = tupleutil.add(self.pos, directionOffsetMap[d])
-        newNode = None
-        wasNew = False
-
-        # Is there already a node at the new position?
-        if newPos in nodes:
-            newNode = nodes[newPos]
+        if new_pos in nodes:
+            new_node = nodes[new_pos]
         else:
-            newNode = Node(newPos)
-            newNode.addTo(nodes)
-            wasNew = True
+            new_node = Node(new_pos)
 
-        # Update the links between the nodes
-        if d == "N":
-            self.north = newNode
-            newNode.south = self
-        elif d == "E":
-            self.east = newNode
-            newNode.west = self
-        elif d == "S":
-            self.south = newNode
-            newNode.north = self
-        elif d == "W":
-            self.west = newNode
-            newNode.east = self
+        if char == "N":
+            self.north = new_node
+            new_node.south = self
+        elif char == "E":
+            self.east = new_node
+            new_node.west = self
+        elif char == "S":
+            self.south = new_node
+            new_node.north = self
+        elif char == "W":
+            self.west = new_node
+            new_node.east = self
 
-        return (newNode, wasNew)
+        new_node.add_to(nodes)
 
-    def existingNeighbours(self):
+        return new_node
+
+    def existing_neighbours(self):
         return [n for n in [self.north, self.east, self.south, self.west] if n]
+
+    def add_to(self, nodes):
+        nodes[self.pos] = self

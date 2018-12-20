@@ -1,33 +1,7 @@
 from node import Node
-from queue import Queue, LifoQueue
+from queue import Queue
 
-def splitSections(regex):
-    depth = 0
-    index = 1
-    sectionStart = index
-    sections = []
-    while True:
-        if regex[index] == "(":
-            depth += 1
-        if regex[index] == ")":
-            depth -= 1
-        if depth < 1:
-            c = regex[index]
-            if (c == "|" and depth == 0) or depth == -1:
-                # Extract section
-                sections.append(regex[sectionStart:index])
-                sectionStart = index + 1
-                pass
-
-            if depth == -1:
-                break
-
-
-        index += 1
-        assert index < len(regex), f"Index ({index}) is in regex range"
-
-    return (sections, regex[index+1:])
-
+<<<<<<< HEAD
 indxMem = {}
 def continueIndices(regex, start):
     indices = [start+1]
@@ -95,19 +69,30 @@ def continueAt(regex, start):
 
 
 class Base:
+=======
+>>>>>>> f855424... Use much easier stack method
 
+class Base:
     nodes = {}
 
+<<<<<<< HEAD
     def __init__(self, regex):
         self.root = Node((0,0))
         self.root.addTo(self.nodes)
         queue = LifoQueue()
 
         queue.put((self.root, 0))
+=======
+    def __init__(self):
+        self.root = Node()
+        self.root.add_to(self.nodes)
+>>>>>>> f855424... Use much easier stack method
 
-        lastPrint = 0
-        nrNodes = 0
+    def parse(self, regex):
+        stack = [self.root]
+        last_node = self.root
 
+<<<<<<< HEAD
         while not queue.empty():
             node, index = queue.get()
 
@@ -130,35 +115,100 @@ class Base:
 
             elif char in [")", "|"]:
                 queue.put((node, continueAt(regex, index)))
+=======
+        for char in regex:
+            if char in ["N", "E", "S", "W"]:
+                new_node = last_node.add_node(char, self.nodes)
+                last_node = new_node
+            elif char == "|":
+                last_node = stack[-1]
+            elif char == ")":
+                last_node = stack.pop()
+            elif char == "(":
+                stack.append(last_node)
 
-            else:
-                queue.put((node, index+1))
+        print(f"Parsed {len(self.nodes)} nodes.")
 
-            if nrNodes != lastPrint:
-                print(f"\rScanned {len(self.nodes)} nodes, {queue.qsize()} due", end="")
-                lastPrint = nrNodes
-
-        print(" Done!")
-
-    def doors(self):
+    def most_doors(self):
         visited = set()
         queue = Queue()
         queue.put((self.root, 0))
 
-        maxDoors = 0
+        max_doors = 0
+
+        while not queue.empty():
+            node, doors = queue.get()
+>>>>>>> f855424... Use much easier stack method
+
+            if node in visited:
+                continue
+            else:
+<<<<<<< HEAD
+                queue.put((node, index+1))
+=======
+                visited.add(node)
+>>>>>>> f855424... Use much easier stack method
+
+            if doors > max_doors:
+                max_doors = doors
+
+            for n in node.existing_neighbours():
+                queue.put((n, doors + 1))
+            pass
+
+        return max_doors
+
+    def far_rooms(self, min_distance=1000):
+        visited = set()
+        queue = Queue()
+        queue.put((self.root, 0))
+
+        fars = 0
 
         while not queue.empty():
             node, doors = queue.get()
 
             if node in visited:
                 continue
-            visited.add(node)
+            else:
+                visited.add(node)
 
-            if doors > maxDoors:
-                maxDoors = doors
+            if doors >= min_distance:
+                fars += 1
 
-            for n in node.existingNeighbours():
+            for n in node.existing_neighbours():
                 queue.put((n, doors + 1))
             pass
 
-        return maxDoors
+        return fars
+
+    def __str__(self):
+        minX = min([self.nodes[n].pos[0] for n in self.nodes.keys()])
+        minY = min([self.nodes[n].pos[1] for n in self.nodes.keys()])
+        maxX = max([self.nodes[n].pos[0] for n in self.nodes.keys()])
+        maxY = max([self.nodes[n].pos[1] for n in self.nodes.keys()])
+
+        width = maxX - minX + 1
+        height = maxY - minY + 1
+
+        lines = [["#"] * width * 3 for _ in range(height * 3)]
+
+        for y in range(height):
+            for x in range(width):
+                baseX = x + minX
+                baseY = y + minY
+
+                n = self.nodes[(baseX, baseY)]
+
+                if n.pos in self.nodes:
+                    lines[y * 3 + 1][x * 3 + 1] = " " if (baseX != 0 or baseY != 0) else "0"
+                    if n.north:
+                        lines[y * 3 + 0][x * 3 + 1] = " "
+                    if n.east:
+                        lines[y * 3 + 1][x * 3 + 2] = " "
+                    if n.south:
+                        lines[y * 3 + 2][x * 3 + 1] = " "
+                    if n.west:
+                        lines[y * 3 + 1][x * 3 + 0] = " "
+
+        return "\n".join(["".join(l) for l in lines])
