@@ -1,5 +1,5 @@
 from node import Node
-from queue import Queue
+from queue import Queue, LifoQueue
 
 def splitSections(regex):
     depth = 0
@@ -35,7 +35,7 @@ class Base:
     def __init__(self, regex):
         self.root = Node((0,0))
         self.root.addTo(self.nodes)
-        queue = Queue()
+        queue = LifoQueue()
 
         queue.put((self.root, regex))
 
